@@ -9,7 +9,7 @@ public class Converter : MonoBehaviour
     private string dir = Path.Combine("Assets", "Audio", "Songs");
     private List<float> timeTable = new List<float>();
     private List<int> drumLines = new List<int>();
-    private List<(int, int)> syncLines = new List<(int, int)>();
+    private List<(int, float)> syncLines = new List<(int, float)>();
     private List<int> drumTime = new List<int>();
     private string diffDrum;
     void Awake()
@@ -37,16 +37,14 @@ public class Converter : MonoBehaviour
     {
         string line;
         string[] parts;
-        float noBPM;
-        drumTime.Add(0);
-        //in song.ini there is the preview start time, i don't know what it does
 
         using (StreamReader sr = new StreamReader(filePath))
         {
             //find the resolution
             while ((line = sr.ReadLine()) != null && !line.StartsWith("  Resolution")) { }
             // i divide by 60 (seconds/minute) and by 1000 (because the bpm is *1000)
-            noBPM = 60000f / float.Parse(line.Split(' ')[4]);
+            //line.Split(' ')[4] = resolution
+            float noBPM = 60000f / float.Parse(line.Split(' ')[4]);
 
             //find the sync track
             while (sr.ReadLine() != "[SyncTrack]") { }
@@ -61,7 +59,7 @@ public class Converter : MonoBehaviour
                 {
                     parts = line.Split(' ');
                     //different bpm at different ticks
-                    syncLines.Add((int.Parse(parts[2]), int.Parse(parts[5])));
+                    syncLines.Add((int.Parse(parts[2]), noBPM / int.Parse(parts[5])));
                 }
             }
             //find the drum track
@@ -83,43 +81,33 @@ public class Converter : MonoBehaviour
                     drumLines.Add(int.Parse(parts[5]));
                 }
             }
-            //add end of song
-            syncLines.Add((drumTime[drumTime.Count - 1], 0));
         }
 
         //not to efficent but i don't think it will be a problem
-        createTimeTable(drumTime, syncLines, noBPM);
-        syncLines.Clear();
-        drumTime.Clear();
+        createTimeTable(drumTime, syncLines);
     }
     //create the time teable that will be used to wait the time between the notes
-    private void createTimeTable(List<int> drumTime, List<(int, int)> syncLines, float noBPM)
+    private void createTimeTable(List<int> drumTime, List<(int, float)> syncLines)
     {
-        int len1 = drumTime.Count - 1;
-        int len2 = syncLines.Count;
-        float totalTime;
-        int prevTick = drumTime[0];
-        int endTick;
-
-        for (int i = 0; i < len1; i++)
+        int len = syncLines.Count;
+        float prevSec = 0.0f;
+        foreach (int tick in drumTime)
         {
-            endTick = drumTime[i + 1];
-            totalTime = 0;
-            for (int x = 0; x < len2; x++)
+            float totalTime = 0.0f;
+            for (int i = 1; i < len; i++)
             {
-                if (syncLines[x].Item1 > prevTick)
+                if (tick > syncLines[i].Item1)
                 {
-                    if (syncLines[x].Item1 >= endTick)
-                    {
-                        totalTime += (endTick - prevTick) * (noBPM / syncLines[x - 1].Item2);
-                        break;
-                    }
-                    totalTime += (syncLines[x].Item1 - prevTick) * (noBPM / syncLines[x - 1].Item2);
-                    prevTick = syncLines[x].Item1;
+                    totalTime += (syncLines[i].Item1 - syncLines[i - 1].Item1) * syncLines[i - 1].Item2;
+                }
+                else
+                {
+                    totalTime += (tick - syncLines[i - 1].Item1) * syncLines[i - 1].Item2;
+                    break;
                 }
             }
-            timeTable.Add(totalTime);
-            prevTick = endTick;
+            timeTable.Add(totalTime - prevSec);
+            prevSec = totalTime;
         }
     }
 
