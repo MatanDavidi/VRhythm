@@ -135,6 +135,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Tracking
       objectReference: {fileID: 0}
+    - target: {fileID: 4080280431931633903, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080280431931633903, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080280431931633903, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080280431931633903, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6862070784783383726, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -554,6 +570,11 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!4 &382615623 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3420334371698076086, guid: d79729ee3139c594da3f0bae6b94c23f, type: 3}
+  m_PrefabInstance: {fileID: 29628435}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &427196533
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,7 +992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fda697aa225ae4f44b0c33cdceabcf7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 0}
+  head: {fileID: 382615623}
   spawnDistance: 2
   menu: {fileID: 1528884227}
   showButton:
